@@ -39,7 +39,9 @@ function draw() {
   
   if (objects[i].label == "person") {
     background (255); 
-    text ("Stop looking at me!", 25, 25);
+    noStroke();
+    fill(0);
+    text ("Stop looking at me!", width/2, height/2);
 }
   }
 }
