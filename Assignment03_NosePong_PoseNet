@@ -20,7 +20,7 @@ var yBallChange = 5;
 var xPaddle;
 var yPaddle;
 var paddleWidth = 100;
-var paddleHeight = 25;
+var paddleHeight = 50;
 
 var started = false;
 var score = 0;
@@ -51,39 +51,53 @@ function modelReady() {
 }
 
 function draw() {
+  translate(width,0);
+  scale(-1.0,1.0); 
   image(video, 0, 0, width, height);
   
   
   // We can call both functions to draw all keypoints and the skeletons
-  drawKeypoints();
-  drawSkeleton();
+  // drawKeypoints();
+  // drawSkeleton();
   
   
      // Ball bounces off walls
-	xBall += xBallChange;
-	yBall += yBallChange;
-	if (xBall < diameter/2 || 
+ xBall += xBallChange;
+ yBall += yBallChange;
+ if (xBall < diameter/2 || 
       xBall > width - 0.5*diameter) {
-		xBallChange *= -1;
+  xBallChange *= -1;
   }
-	if (yBall < diameter/2 || 
+ if (yBall < diameter/2 || 
       yBall > height - diameter) {
     yBallChange *= -1;
-	}
+ }
   
   // Detect collision with paddle
+  
+    for (let i = 0; i < poses.length; i++) {
+    // For each pose detected, loop through all the keypoints
+    let pose = poses[i].pose;
+    let nose = pose.nose;
+    // do something with nose.x and nose.y here
+    // print('nosex is', nose.x);
+    // print('nosey is', nose.y);
+  
   if ((xBall > xPaddle &&
-      xBall < xPaddle + paddleWidth) &&
-      (yBall + (diameter/2) >= yPaddle)) {
+      xBall < nose.x + paddleWidth) &&
+      (yBall + (diameter/2) >= nose.y)) {
     xBallChange *= -1;
     yBallChange *= -1;
     score++;
   }
   
-  // Draw ball
-	fill(255, 0, 255);
-	noStroke();
-	ellipse(xBall, yBall, diameter, diameter);
+      // Draw paddle
+  
+  fill(0, 225, 225);
+  noStroke();
+  rectMode(CENTER);
+  rect(nose.x, nose.y, paddleWidth, paddleHeight);
+  }
   
   // Update paddle location
    if (!started) {
@@ -92,28 +106,15 @@ function draw() {
     started = true;
    }
 
+   // Draw ball
+ fill(100, 100, 100);
+ noStroke();
+ ellipse(xBall, yBall, diameter, diameter);
   
-// Draw paddle
-  for (let i = 0; i < poses.length; i++) {
-    // For each pose detected, loop through all the keypoints
-    let pose = poses[i].pose;
-    let nose = pose.nose;
-    // do something with nose.x and nose.y here
-    print('nosex is', nose.x);
-    print('nosey is', nose.y);
-
-  
-  fill(0, 255, 255);
-  noStroke();
-  rectMode(CENTER);
-  rect(nose.x, nose.y, paddleWidth, paddleHeight);
-  }
-    
-  
-  // Draw score
-  fill(0, 255, 255);
-  textSize(24);
-	text("Score: " + score, 10, 25);
+ //  // Draw score
+ //  fill(0, 0, 0);
+ //  textSize(24);
+ // text("Score: " + score, 10, 25);
 }
 
 
@@ -137,17 +138,17 @@ function drawKeypoints()  {
   
 }
 
-// A function to draw the skeletons
-function drawSkeleton() {
-  // Loop through all the skeletons detected
-  for (let i = 0; i < poses.length; i++) {
-    let skeleton = poses[i].skeleton;
-    // For every skeleton, loop through all body connections
-    for (let j = 0; j < skeleton.length; j++) {
-      let partA = skeleton[j][0];
-      let partB = skeleton[j][1];
-      stroke(255, 0, 0);
-      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
-    }
-  }
-}
+// // A function to draw the skeletons
+// function drawSkeleton() {
+//   // Loop through all the skeletons detected
+//   for (let i = 0; i < poses.length; i++) {
+//     let skeleton = poses[i].skeleton;
+//     // For every skeleton, loop through all body connections
+//     for (let j = 0; j < skeleton.length; j++) {
+//       let partA = skeleton[j][0];
+//       let partB = skeleton[j][1];
+//       stroke(255, 0, 0);
+//       line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+//     }
+//   }
+// }
